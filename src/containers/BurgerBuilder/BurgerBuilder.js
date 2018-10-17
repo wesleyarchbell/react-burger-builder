@@ -1,6 +1,8 @@
 import React, { Component } from 'react';
 import Burger from '../../components/Burger/Burger';
 import BuildControls from '../../components/Burger/BuildControls/BuildControls';
+import OrderSummary from '../../components/Burger/OrderSummary/OrderSummary';
+import Modal from '../../components/UI/Modal/Modal';
 
 const INGREDIENT_PRICES = {
     salad: 0.5,
@@ -11,7 +13,6 @@ const INGREDIENT_PRICES = {
 
 class BurgerBuilder extends Component {
 
-
     state = {
         ingredients: {
             salad: 0,
@@ -19,7 +20,9 @@ class BurgerBuilder extends Component {
             bacon: 0,
             meat: 0
         },
-        totalPrice: 5
+        totalPrice: 5,
+        canOrder: false,
+        ordering: false
     }
 
     addIngredientHandler = (type) => {
@@ -31,19 +34,69 @@ class BurgerBuilder extends Component {
         this.setState({
             ingredients: updatedIngredients,
             totalPrice: updatedPrice
-        })
+        });
+        this.updateCanOrder(updatedIngredients);
     }
 
     removeIngredientHandler = (type) => {
+        if (this.state.ingredients[type] > 0) {
+            const updatedIngredients = {
+                ...this.state.ingredients
+            }
+            updatedIngredients[type] = updatedIngredients[type] - 1;
+            const updatedPrice = this.state.totalPrice - INGREDIENT_PRICES[type];
+            this.setState({
+                ingredients: updatedIngredients,
+                totalPrice: updatedPrice
+            })
+            this.updateCanOrder(updatedIngredients);
+        };
+    }
 
+    updateCanOrder = (ingredients) => {
+        const sum = Object.keys(ingredients)
+            .map(key => ingredients[key])
+            .reduce((sum, el) => {
+                return sum + el;
+            }, 0);
+
+        this.setState({
+            canOrder: sum > 0
+        });
+    }
+
+    enableOrdering = () => {
+        this.setState({
+            ordering: true
+        })
+    }
+
+    modalClosedHandler = () => {
+        this.setState({
+            ordering: false
+        })
     }
 
     render() {
+        const disabledInfo = {
+            ...this.state.ingredients
+        }
+        for (let i in disabledInfo) {
+            disabledInfo[i] = disabledInfo[i] === 0;
+        }
         return (
             <React.Fragment>
+                <Modal show={this.state.ordering} clicked={this.modalClosedHandler}>
+                    <OrderSummary ingredients={this.state.ingredients} />
+                </Modal>
                 <Burger ingredients={this.state.ingredients}/>
                 <BuildControls 
-                    ingredientAddedHandler={this.addIngredientHandler}
+                    added={this.addIngredientHandler}
+                    removed={this.removeIngredientHandler}
+                    disabledInfo={disabledInfo}
+                    price={this.state.totalPrice.toFixed(2)}
+                    canOrder={this.state.canOrder}
+                    ordering={this.enableOrdering}
                     />
             </React.Fragment>    
         );
