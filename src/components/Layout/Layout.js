@@ -1,10 +1,12 @@
 import React from 'react';
+import Toolbar from '../Navigation/Toolbar/Toolbar';
+
 import styles from './Layout.module.css';
 
 const layout = (props) => {
     return (
         <React.Fragment>
-            <div>Toolbar, Side Drawer, Backdrop</div>
+            <Toolbar/>
             <main className={styles.Content}>
                 {props.children}
             </main>

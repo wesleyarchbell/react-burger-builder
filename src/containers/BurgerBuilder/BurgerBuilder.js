@@ -74,7 +74,17 @@ class BurgerBuilder extends Component {
     modalClosedHandler = () => {
         this.setState({
             ordering: false
-        })
+        });
+    }
+
+    cancelOrderHandler = () => {
+        this.setState({
+            ordering: false
+        });
+    }
+
+    continueOrderHandler = () => {
+
     }
 
     render() {
@@ -87,7 +97,12 @@ class BurgerBuilder extends Component {
         return (
             <React.Fragment>
                 <Modal show={this.state.ordering} clicked={this.modalClosedHandler}>
-                    <OrderSummary ingredients={this.state.ingredients} />
+                    <OrderSummary cancelOrder={this.cancelOrderHandler}
+                                  continueOrder={this.continueOrderHandler}
+                                  price={this.state.totalPrice.toFixed(2)}
+                                  prices={INGREDIENT_PRICES}
+                                  ingredients={this.state.ingredients}
+                    />
                 </Modal>
                 <Burger ingredients={this.state.ingredients}/>
                 <BuildControls 
