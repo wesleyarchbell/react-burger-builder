@@ -1,0 +1,11 @@
+.Menu {
+    padding-top: 6px;
+    width: 30px;
+    height: 30px;
+}
+
+@media (min-width: 499px) {
+    .Menu {
+        display: none;
+    }
+}
