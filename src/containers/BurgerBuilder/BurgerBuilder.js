@@ -3,6 +3,9 @@ import Burger from '../../components/Burger/Burger';
 import BuildControls from '../../components/Burger/BuildControls/BuildControls';
 import OrderSummary from '../../components/Burger/OrderSummary/OrderSummary';
 import Modal from '../../components/UI/Modal/Modal';
+import Spinner from '../../components/UI/Spinner/Spinner';
+
+import axios from '../../axios-orders';
 
 const INGREDIENT_PRICES = {
     salad: 0.5,
@@ -22,7 +25,8 @@ class BurgerBuilder extends Component {
         },
         totalPrice: 5,
         canOrder: false,
-        ordering: false
+        ordering: false,
+        loading: false
     }
 
     addIngredientHandler = (type) => {
@@ -85,6 +89,26 @@ class BurgerBuilder extends Component {
 
     continueOrderHandler = () => {
 
+        this.setState({ loading: true });
+        const order = {
+            ingredients: this.state.ingredients,
+            totalPrice: this.state.totalPrice,
+            customer: {
+                name: "Wesley",
+                address: "21 Test St",
+                country: "Australia",
+                email: "test@test.com",
+                deliveryMethod: "express"
+            }
+        };
+
+        axios.post('/orders.json', order).then(response => {
+            console.log(response);
+            this.setState({ loading: false, ordering: false });
+        }).catch(error => {
+            console.log(error);
+            this.setState({ loading: false, ordering: false });
+        });
     }
 
     render() {
@@ -94,26 +118,32 @@ class BurgerBuilder extends Component {
         for (let i in disabledInfo) {
             disabledInfo[i] = disabledInfo[i] === 0;
         }
+
+        let orderSummary = <OrderSummary cancelOrder={this.cancelOrderHandler}
+            continueOrder={this.continueOrderHandler}
+            price={this.state.totalPrice.toFixed(2)}
+            prices={INGREDIENT_PRICES}
+            ingredients={this.state.ingredients}
+        />;
+        if (this.state.loading) {
+            orderSummary = <Spinner />
+        }
+
         return (
             <React.Fragment>
                 <Modal show={this.state.ordering} clicked={this.modalClosedHandler}>
-                    <OrderSummary cancelOrder={this.cancelOrderHandler}
-                                  continueOrder={this.continueOrderHandler}
-                                  price={this.state.totalPrice.toFixed(2)}
-                                  prices={INGREDIENT_PRICES}
-                                  ingredients={this.state.ingredients}
-                    />
+                    {orderSummary}
                 </Modal>
-                <Burger ingredients={this.state.ingredients}/>
-                <BuildControls 
+                <Burger ingredients={this.state.ingredients} />
+                <BuildControls
                     added={this.addIngredientHandler}
                     removed={this.removeIngredientHandler}
                     disabledInfo={disabledInfo}
                     price={this.state.totalPrice.toFixed(2)}
                     canOrder={this.state.canOrder}
                     ordering={this.enableOrdering}
-                    />
-            </React.Fragment>    
+                />
+            </React.Fragment>
         );
     }
 }
