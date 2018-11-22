@@ -1,6 +1,5 @@
 import React from 'react';
 import Button from '../../UI/Button/Button';
-import { Link } from 'react-router-dom';
 
 const orderSummary = (props) => {
 
@@ -11,7 +10,7 @@ const orderSummary = (props) => {
             return null;
         }
         const price = prices[i] * amount;
-        return <li key={i}><span style={{ textTransform: 'capitalize' }}>{i}</span> (${price.toFixed(2)})</li>
+        return <li key={i}><span style={{ textTransform: 'capitalize' }}>{amount} x {i}</span> (${price.toFixed(2)})</li>
     })
 
     return (
@@ -25,9 +24,7 @@ const orderSummary = (props) => {
             <p>Total Price: <strong>${props.price}</strong></p>
             <p>Continue to Checkout?</p>
             <Button btnType='Success' clicked={props.cancelOrder}>Cancel</Button>
-            <Link to='/checkout'>
-                <Button btnType='Danger' clicked={props.continueOrder}>Continue</Button>
-            </Link>
+            <Button btnType='Danger' clicked={props.continueOrder}>Continue</Button>
         </React.Fragment>
     );
 }

@@ -31,7 +31,7 @@ class BurgerBuilder extends Component {
                 ingredients: response.data
             });
         }).catch(error => {
-            this.setState({error: true});
+            this.setState({ error: true });
         });
     }
 
@@ -95,26 +95,39 @@ class BurgerBuilder extends Component {
 
     continueOrderHandler = () => {
 
-        this.setState({ loading: true });
-        const order = {
-            ingredients: this.state.ingredients,
-            totalPrice: this.state.totalPrice,
-            customer: {
-                name: "Wesley",
-                address: "21 Test St",
-                country: "Australia",
-                email: "test@test.com",
-                deliveryMethod: "express"
-            }
-        };
+        // this.setState({ loading: true });
+        // const order = {
+        //     ingredients: this.state.ingredients,
+        //     totalPrice: this.state.totalPrice,
+        //     customer: {
+        //         name: "Wesley",
+        //         address: "21 Test St",
+        //         country: "Australia",
+        //         email: "test@test.com",
+        //         deliveryMethod: "express"
+        //     }
+        // };
 
-        axios.post('/orders.json', order).then(response => {
-            console.log(response);
-            this.setState({ loading: false, ordering: false });
-        }).catch(error => {
-            console.log(error);
-            this.setState({ loading: false, ordering: false });
-        });
+        // axios.post('/orders.json', order).then(response => {
+        //     console.log(response);
+        //     this.setState({ loading: false, ordering: false });
+        // }).catch(error => {
+        //     console.log(error);
+        //     this.setState({ loading: false, ordering: false });
+        // });
+
+        let queryParams = Object.keys(this.state.ingredients)
+            .map(i => {
+                return [...Array(this.state.ingredients[i])]
+                    .map((amount, index) => {
+                        return (i + "=" + amount);
+                    })
+            }).reduce((arr, element) => {
+                return arr.concat(element);
+            }, []);
+
+        console.log(queryParams);
+        //this.props.history.push('/checkout');
     }
 
     render() {
@@ -126,15 +139,15 @@ class BurgerBuilder extends Component {
         }
 
         let orderSummary = null;
-        let burger = <Spinner/>;
+        let burger = <Spinner />;
         if (this.state.error) {
-            burger = <p style={{textAlign: 'center'}}>There was a problem loading the ingredients.</p>
+            burger = <p style={{ textAlign: 'center' }}>There was a problem loading the ingredients.</p>
         }
 
         if (this.state.ingredients) {
             burger = (
                 <React.Fragment>
-                    <Burger ingredients={this.state.ingredients}/>
+                    <Burger ingredients={this.state.ingredients} />
                     <BuildControls
                         added={this.addIngredientHandler}
                         removed={this.removeIngredientHandler}
@@ -146,10 +159,10 @@ class BurgerBuilder extends Component {
                 </React.Fragment>
             );
             orderSummary = <OrderSummary cancelOrder={this.cancelOrderHandler}
-                                         continueOrder={this.continueOrderHandler}
-                                         price={this.state.totalPrice.toFixed(2)}
-                                         prices={INGREDIENT_PRICES}
-                                         ingredients={this.state.ingredients}
+                continueOrder={this.continueOrderHandler}
+                price={this.state.totalPrice.toFixed(2)}
+                prices={INGREDIENT_PRICES}
+                ingredients={this.state.ingredients}
             />;
         }
 
