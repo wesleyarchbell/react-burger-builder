@@ -115,7 +115,6 @@ class BurgerBuilder extends Component {
         //     console.log(error);
         //     this.setState({ loading: false, ordering: false });
         // });
-        //dd
 
         const queryParams = [];
         for (let i in this.state.ingredients) {
