@@ -7,4 +7,4 @@ const spinner = () => {
     )
 }
 
-export default spinner;
+export default spinner; 
