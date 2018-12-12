@@ -59,10 +59,23 @@ class ContactData extends Component {
         });
     }
 
-    render() {
+    changeHandler = (event, name) => {
+        const orderForm = {...this.state.orderForm};
+        const formElement = { ...orderForm.elements.find(i => i.name === name)};
+        formElement.value = event.target.value;
+        const formIndex = orderForm.elements.findIndex(i => i.name === name);
+        orderForm.elements[formIndex] = formElement;
+        this.setState({orderForm: orderForm}); 
+    }
 
+    render() {
         let formElements = this.state.orderForm.elements.map(element => {
-            return <Input key={element.name} elementType={element.elementType} elementConfig={element.elementConfig} value={element.value} />
+            return <Input key={element.name}
+                name = {element.name}
+                elementType={element.elementType}
+                elementConfig={element.elementConfig}
+                value={element.value} 
+                changeHandler={this.changeHandler}/>
         });
 
         let form = null;
@@ -70,7 +83,7 @@ class ContactData extends Component {
             form = <Spinner />
         } else {
             form = (
-                <form>  
+                <form>
                     {formElements}
                     <Button btnType="Success" clicked={this.orderHandler}>ORDER</Button>
                 </form>
