@@ -11,18 +11,9 @@ import withErrorHandler from '../../hoc/withErrorHandler/withErrorHandler';
 import axios from '../../axios-orders';
 import * as actionTypes from '../../store/actions';
 
-const INGREDIENT_PRICES = {
-    salad: 0.5,
-    cheese: 0.3,
-    bacon: 1.1,
-    meat: 1.3
-}
-
 class BurgerBuilder extends Component {
 
-    state = {        
-        totalPrice: 5,
-        canOrder: false,
+    state = {   
         ordering: false,
         loading: false,
         error: false
@@ -38,44 +29,14 @@ class BurgerBuilder extends Component {
         // });
     }
 
-    addIngredientHandler = (type) => {
-        const updatedIngredients = {
-            ...this.state.ingredients
-        }
-        updatedIngredients[type] = updatedIngredients[type] + 1;
-        const updatedPrice = this.state.totalPrice + INGREDIENT_PRICES[type];
-        this.setState({
-            ingredients: updatedIngredients,
-            totalPrice: updatedPrice
-        });
-        this.updateCanOrder(updatedIngredients);
-    }
-
-    removeIngredientHandler = (type) => {
-        if (this.state.ingredients[type] > 0) {
-            const updatedIngredients = {
-                ...this.state.ingredients
-            }
-            updatedIngredients[type] = updatedIngredients[type] - 1;
-            const updatedPrice = this.state.totalPrice - INGREDIENT_PRICES[type];
-            this.setState({
-                ingredients: updatedIngredients,
-                totalPrice: updatedPrice
-            })
-            this.updateCanOrder(updatedIngredients);
-        };
-    }
-
-    updateCanOrder = (ingredients) => {
-        const sum = Object.keys(ingredients)
-            .map(key => ingredients[key])
+    updateCanOrder = () => {
+        const sum = Object.keys(this.props.ings)
+            .map(key => this.props.ings[key])
             .reduce((sum, el) => {
                 return sum + el;
             }, 0);
 
-        this.setState({
-            canOrder: sum > 0
-        });
+        return sum > 0;
     }
 
     enableOrdering = () => {
@@ -97,17 +58,7 @@ class BurgerBuilder extends Component {
     }
 
     continueOrderHandler = () => {
-        const queryParams = [];
-        for (let i in this.state.ingredients) {
-            queryParams.push(encodeURIComponent(i) + '=' + this.state.ingredients[i]);
-        }
-        queryParams.push('price=' + this.state.totalPrice.toFixed(2));
-
-        const queryString = queryParams.join('&');
-        this.props.history.push({
-            pathname: '/checkout',
-            search: '?' + queryString
-        });
+        this.props.history.push('/checkout');
     }
 
     render() {
@@ -132,16 +83,16 @@ class BurgerBuilder extends Component {
                         ingredientAdded={this.props.onIngredientAdded}
                         ingredientRemoved={this.props.onIngredientRemoved}
                         disabledInfo={disabledInfo}
-                        price={this.state.totalPrice.toFixed(2)}
-                        canOrder={this.state.canOrder}
+                        price={this.props.price.toFixed(2)}
+                        canOrder={this.updateCanOrder()}
                         ordering={this.enableOrdering}
                     />
                 </React.Fragment>
             );
             orderSummary = <OrderSummary cancelOrder={this.cancelOrderHandler}
                 continueOrder={this.continueOrderHandler}
-                price={this.state.totalPrice.toFixed(2)}
-                prices={INGREDIENT_PRICES}
+                price={this.props.price.toFixed(2)}
+                prices={this.props.prices}
                 ingredients={this.props.ings}
             />;
         }
@@ -163,7 +114,9 @@ class BurgerBuilder extends Component {
 
 const mapStateToProps = state => {
     return {
-        ings: state.ingredients
+        ings: state.ingredients,
+        price: state.totalPrice,
+        prices: state.prices
     }
 }
 
