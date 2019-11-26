@@ -7,26 +7,19 @@ import OrderSummary from '../../components/Burger/OrderSummary/OrderSummary';
 import Modal from '../../components/UI/Modal/Modal';
 import Spinner from '../../components/UI/Spinner/Spinner';
 import withErrorHandler from '../../hoc/withErrorHandler/withErrorHandler';
-
 import axios from '../../axios-orders';
+
 import * as burgerBuilderActions from '../../store/actions/index';
 
 class BurgerBuilder extends Component {
 
     state = {   
-        ordering: false,
-        loading: false,
-        error: false
+        ordering: false
+        
     }
 
     componentDidMount() {
-        // axios.get('/ingredients.json').then(response => {
-        //     this.setState({
-        //         ingredients: response.data
-        //     });
-        // }).catch(error => {
-        //     this.setState({ error: true });
-        // });
+
     }
 
     updateCanOrder = () => {
@@ -95,10 +88,6 @@ class BurgerBuilder extends Component {
                 prices={this.props.prices}
                 ingredients={this.props.ings}
             />;
-        }
-
-        if (this.state.loading) {
-            orderSummary = <Spinner />
         }
 
         return (
