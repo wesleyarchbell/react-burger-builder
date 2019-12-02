@@ -19,7 +19,7 @@ class BurgerBuilder extends Component {
     }
 
     componentDidMount() {
-
+        this.props.onInitIngredients();
     }
 
     updateCanOrder = () => {
@@ -64,7 +64,7 @@ class BurgerBuilder extends Component {
 
         let orderSummary = null;
         let burger = <Spinner />;
-        if (this.state.error) {
+        if (this.props.error) {
             burger = <p style={{ textAlign: 'center' }}>There was a problem loading the ingredients.</p>
         }
 
@@ -105,14 +105,16 @@ const mapStateToProps = state => {
     return {
         ings: state.ingredients,
         price: state.totalPrice,
-        prices: state.prices
+        prices: state.prices,
+        error: state.error
     }
 }
 
 const mapDispatchToProps = dispatch => {
     return {
         onIngredientAdded: (ingName) => dispatch(burgerBuilderActions.addIngredient(ingName)),
-        onIngredientRemoved: (ingName) => dispatch(burgerBuilderActions.removeIngredient(ingName))
+        onIngredientRemoved: (ingName) => dispatch(burgerBuilderActions.removeIngredient(ingName)),
+        onInitIngredients: () => dispatch(burgerBuilderActions.initIngredients())
     }
 } 
 
